@@ -58,7 +58,7 @@ let getNewSunTimes = async (saveToFilePath = null) => {
 	console.log('Getting public IP...')
 	let publicIP = await simpleHttpGet3Tries('https://ipinfo.io/ip')
 	console.log('Getting location from IP...')
-	let IPLocation = JSON.parse(await simpleHttpGet3Tries(`https://ipvigilante.com/${publicIP}`))
+	let IPLocation = JSON.parse(await simpleHttpGet3Tries(`https://ipvigilante.com/${publicIP}`)).data
 	console.log('Getting Sun Times from Location...')
 	let { sunrise, sunset } = JSON.parse(await simpleHttpGet3Tries(`https://api.sunrise-sunset.org/json?lat=${IPLocation.latitude}&lng=${IPLocation.longitude}`)).results
 	let final = {

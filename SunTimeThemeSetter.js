@@ -118,39 +118,26 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 	return sunTimes
 }
 
-const getLastSetThemes = async (lastSetThemesPath) => {
-	let lastSetThemes = {
-		gnome: null,
-		mailspring: null
-	}
-	if (lastSetThemesPath) {
-		if (fs.existsSync(lastSetThemesPath)) {
-			try {
-				let data = JSON.parse(fs.readFileSync(lastSetThemesPath))
-				if (data.gnome) {
-					lastSetThemes.gnome = data.gnome
-				}
-				if (data.mailspring) {
-					lastSetThemes.mailspring = data.mailspring
-				}
-			} catch (err) {
-				console.log(err)
-			}
-		} else {
-			console.log('Last set themes file does not exist.')
-		}
-	}
-	return lastSetThemes
-}
-
-// Change the gnome theme
+// Change the gnome Shell and App themes (if they are not already set)
 const changeGNOMETheme = (theme) => {
-	bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}" && gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
+	let currentShellTheme = bashSync(`gsettings get org.gnome.shell.extensions.user-theme name`)
+	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`)
 	let time = new Date()
-	console.log(`GNOME Theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+	if (`'${theme}'` != currentShellTheme) {
+		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
+		console.log(`GNOME Shell ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+	} else {
+		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${currentShellTheme}).`)
+	}
+	if (`'${theme}'` != currentAppTheme) {
+		bashSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
+		console.log(`GNOME App ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+	} else {
+		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${currentAppTheme}).`)
+	}
 }
 
-// If a Mailspring folder exists in the current User's ~/.config, then the *.core.theme property in config.json is changed to the theme provided
+// If a Mailspring folder exists in the current User's ~/.config, then the *.core.theme property in config.json is changed to the theme provided (if it is not already the same theme)
 const changeMailSpringTheme = (theme) => {
 	let username = bashSync('whoami').toString().trim()
 	if (fs.existsSync(`/home/${username}/.config/Mailspring/config.json`)) {
@@ -158,18 +145,22 @@ const changeMailSpringTheme = (theme) => {
 		if (mailspringConfig) {
 			if (mailspringConfig['*']) {
 				if (mailspringConfig['*'].core) {
-					mailspringConfig['*'].core.theme = theme
-					fs.writeFileSync(`/home/${username}/.config/Mailspring/config.json`, JSON.stringify(mailspringConfig, null, '\t'))
 					let time = new Date()
-					console.log(`Mailspring Theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-					try {
-						bashSync('pkill -f mailspring')
-					} catch (err) {
-						// Try catch needed as this always throws an error
+					if (mailspringConfig['*'].core.theme != theme) {
+						mailspringConfig['*'].core.theme = theme
+						fs.writeFileSync(`/home/${username}/.config/Mailspring/config.json`, JSON.stringify(mailspringConfig, null, '\t'))
+						console.log(`Mailspring Theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+						try {
+							bashSync('pkill -f mailspring')
+						} catch (err) {
+							// Try catch needed as this always throws an error
+						}
+						console.log(`Mailspring process killed at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+						bash('mailspring --background &')
+						console.log(`Mailspring started in background at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+					} else {
+						console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change Mailspring theme (currently ${mailspringConfig['*'].core.theme}).`)
 					}
-					console.log(`Mailspring process killed at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-					bash('mailspring --background &')
-					console.log(`Mailspring started in background at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 				}
 			}
 		}
@@ -177,39 +168,17 @@ const changeMailSpringTheme = (theme) => {
 }
 
 // Takes an object of { sunrise, sunset } and uses it to set a dark or light theme
-const changeThemesWithSunTimes = (sunTimes, lastSetThemes, lightTheme, darkTheme) => {
+const changeThemesWithSunTimes = (sunTimes, lightTheme, darkTheme) => {
 	let now = getTimeNumberFromDate(new Date())
 	let sunrise = sunTimes.sunrise
 	let sunset = sunTimes.sunset
-	let time = new Date()
 	if (now > sunrise && now < sunset) {
-		if (lightTheme != lastSetThemes.gnome) {
-			lastSetThemes.gnome = lightTheme
-			changeGNOMETheme(lightTheme)
-		} else {
-			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME theme (currently ${lastSetThemes.gnome}).`)
-		}
-		if (mailSpringLightTheme != lastSetThemes.mailspring) {
-			lastSetThemes.mailspring = mailSpringLightTheme
-			changeMailSpringTheme(mailSpringLightTheme)
-		} else {
-			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change Mailspring theme (currently ${lastSetThemes.mailspring}).`)
-		}
+		changeGNOMETheme(lightTheme)
+		changeMailSpringTheme(mailSpringLightTheme)
 	} else {
-		if (darkTheme != lastSetThemes.gnome) {
-			lastSetThemes.gnome = darkTheme
-			changeGNOMETheme(darkTheme)
-		} else {
-			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME theme (currently ${lastSetThemes.gnome}).`)
-		}
-		if (mailSpringDarkTheme != lastSetThemes.mailspring) {
-			lastSetThemes.mailspring = mailSpringDarkTheme
-			changeMailSpringTheme(mailSpringDarkTheme)
-		} else {
-			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change Mailspring theme (currently ${lastSetThemes.mailspring}).`)
-		}
+		changeGNOMETheme(darkTheme)
+		changeMailSpringTheme(mailSpringDarkTheme)
 	}
-	fs.writeFileSync(lastSetThemesPath, JSON.stringify(lastSetThemes, null, '\t'))
 }
 
 // Main logic

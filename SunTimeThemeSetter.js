@@ -125,13 +125,13 @@ const changeGNOMETheme = (theme) => {
 	let time = new Date()
 	if (`'${theme}'` != currentShellTheme) {
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
-		console.log(`GNOME Shell ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${currentShellTheme}).`)
 	}
 	if (`'${theme}'` != currentAppTheme) {
 		bashSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
-		console.log(`GNOME App ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+		console.log(`GNOME App theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${currentAppTheme}).`)
 	}
@@ -149,7 +149,7 @@ const changeMailSpringTheme = (theme) => {
 					if (mailspringConfig['*'].core.theme != theme) {
 						mailspringConfig['*'].core.theme = theme
 						fs.writeFileSync(`/home/${username}/.config/Mailspring/config.json`, JSON.stringify(mailspringConfig, null, '\t'))
-						console.log(`Mailspring Theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+						console.log(`Mailspring theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 						try {
 							bashSync('pkill -f mailspring')
 						} catch (err) {

@@ -189,8 +189,7 @@ const run = async () => {
 		throw 'Please provide light and dark theme names as arguments!'
 	} else {
 		let sunTimes = await getSunTimes(savedTimesPath, 24)
-		let lastSetThemes = await getLastSetThemes(lastSetThemesPath)
-		changeThemesWithSunTimes(sunTimes, lastSetThemes, process.argv[2], process.argv[3])
+		changeThemesWithSunTimes(sunTimes, process.argv[2], process.argv[3])
 	}
 }
 

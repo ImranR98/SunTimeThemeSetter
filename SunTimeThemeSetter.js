@@ -122,9 +122,11 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 const changeGNOMETheme = (theme) => {
 	let currentShellTheme = bashSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
 	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
+	let currentAppTheme2 = bashSync(`gsettings get org.gnome.gedit.preferences.editor scheme`).toString().trim()
 	let time = new Date()
-	if (`'${theme}'` != currentShellTheme) {
-		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}" && gsettings set org.gnome.gedit.preferences.editor scheme ${theme}`)
+	if (`'${theme}'` != currentShellTheme || `'${theme}'` != currentAppTheme2) {
+		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
+		bashSync(`gsettings set org.gnome.gedit.preferences.editor scheme "${theme}"`)
 		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)

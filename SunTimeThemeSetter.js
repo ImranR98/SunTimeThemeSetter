@@ -124,6 +124,7 @@ const changeGNOMETheme = (theme) => {
 	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
 	let time = new Date()
 	if (`'${theme}'` != currentShellTheme) {
+		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name Adwaita`) // Attempting bugfix for Pop!_OS 20.04
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
 		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {

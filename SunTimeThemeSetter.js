@@ -123,19 +123,17 @@ const changeGNOMETheme = async (theme) => {
 	let currentShellTheme = bashSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
 	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
 	let time = new Date()
-	if (`'${theme}'` != currentShellTheme) {
-		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name Adwaita`) // Attempting bugfix for Pop!_OS 20.04
-		await sleep(10)
-		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
-		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-	} else {
-		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)
-	}
 	if (`'${theme}'` != currentAppTheme) {
 		bashSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
 		console.log(`GNOME App theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
+	}
+	if (`'${theme}'` != currentShellTheme) {
+		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
+		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+	} else {
+		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)
 	}
 }
 

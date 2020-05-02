@@ -119,12 +119,13 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 }
 
 // Change the gnome Shell and App themes (if they are not already set)
-const changeGNOMETheme = (theme) => {
+const changeGNOMETheme = async (theme) => {
 	let currentShellTheme = bashSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
 	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
 	let time = new Date()
 	if (`'${theme}'` != currentShellTheme) {
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name Adwaita`) // Attempting bugfix for Pop!_OS 20.04
+		await sleep(10)
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
 		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {
@@ -169,15 +170,15 @@ const changeMailSpringTheme = (theme) => {
 }
 
 // Takes an object of { sunrise, sunset } and uses it to set a dark or light theme
-const changeThemesWithSunTimes = (sunTimes, lightTheme, darkTheme) => {
+const changeThemesWithSunTimes = async (sunTimes, lightTheme, darkTheme) => {
 	let now = getTimeNumberFromDate(new Date())
 	let sunrise = sunTimes.sunrise
 	let sunset = sunTimes.sunset
 	if (now > sunrise && now < sunset) {
-		changeGNOMETheme(lightTheme)
+		await changeGNOMETheme(lightTheme)
 		changeMailSpringTheme(mailSpringLightTheme)
 	} else {
-		changeGNOMETheme(darkTheme)
+		await changeGNOMETheme(darkTheme)
 		changeMailSpringTheme(mailSpringDarkTheme)
 	}
 }
@@ -190,7 +191,7 @@ const run = async () => {
 		throw 'Please provide light and dark theme names as arguments!'
 	} else {
 		let sunTimes = await getSunTimes(savedTimesPath, 24)
-		changeThemesWithSunTimes(sunTimes, process.argv[2], process.argv[3])
+		await changeThemesWithSunTimes(sunTimes, process.argv[2], process.argv[3])
 	}
 }
 

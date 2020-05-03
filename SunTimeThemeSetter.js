@@ -130,9 +130,6 @@ const changeGNOMETheme = async (theme) => {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
 	}
 	if (`'${theme}'` != currentShellTheme) {
-		await sleep(2)
-		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name Adwaita`) // Attempt bugfix for Pop!_OS 20.04 - the shell theme change doesn't work after reboot until it's changed to something else
-		await sleep(2)
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
 		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {

@@ -1,5 +1,5 @@
 # SunTimeThemeSetter
-Automatically switch between light/dark t GNOME and Mailspring themes on sunrise/sunset.
+Automatically switch between light/dark GNOME and Mailspring themes on sunrise/sunset.
 
 ## Requirements
 Requires Node.js.

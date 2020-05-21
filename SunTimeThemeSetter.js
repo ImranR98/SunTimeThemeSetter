@@ -130,6 +130,7 @@ const changeGNOMETheme = async (theme) => {
 		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
 	}
 	if (`'${theme}'` != currentShellTheme) {
+		await sleep(1000) // Pop!_OS 20.04 Bugifx
 		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
 		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 	} else {

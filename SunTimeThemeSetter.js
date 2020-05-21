@@ -1,4 +1,4 @@
-// This Node App uses 3 free APIs to get the local sunrise/sunset times, then sets a light/dark gnome-theme.
+// This Node App uses 2 free APIs to get the local sunrise/sunset times, then sets a light/dark gnome-theme.
 // If a Mailspring folder exists in the current User's ~/.config then the *.core.theme property in config.json is changed accordingly (ui-light or ui-dark)
 // Mailspring themes are hardcoded for now
 // Imran Remtulla

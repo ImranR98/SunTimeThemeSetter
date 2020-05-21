@@ -3,7 +3,7 @@ LIGHTTHEME='Yaru-Red'
 DARKTHEME='Yaru-Red-dark'
 
 FILESFOLDER=~/STTS-Files # If you change this, change it in the .js too.
-if [ -d "$FILESFOLDER" ]
+if [ ! -d "$FILESFOLDER" ]
 then
 			echo "Creating Files folder..."
 			mkdir ~/STTS-Files

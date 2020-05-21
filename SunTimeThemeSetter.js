@@ -11,8 +11,7 @@ const bash = require('child_process').exec
 require('./sun')
 
 // Hardcoded vars.
-const savedTimesPath = '/home/' + bashSync('whoami').toString().trim() + '/STTS-Files/savedSunTimes.json'
-const lastSetThemesPath = '/home/' + bashSync('whoami').toString().trim() + '/STTS-Files/lastSetThemes.json'
+const savedTimesPath = '/home/' + bashSync('whoami').toString().trim() + '/savedSunTimes.json'
 const mailSpringDarkTheme = 'ui-dark'
 const mailSpringLightTheme = 'ui-light'
 

@@ -1,19 +1,22 @@
-// This Node App uses 2 free APIs to get the local sunrise/sunset times, then sets a light/dark gnome-theme.
-// If a Mailspring folder exists in the current User's ~/.config then the *.core.theme property in config.json is changed accordingly (ui-light or ui-dark)
-// Mailspring themes are hardcoded for now
-// Imran Remtulla
+// This Node App uses 2 free APIs to get the local sunrise/sunset times, then set a light/dark themes for GNOME and Mailspring (on Linux) or Windows 10.
 
 const https = require('https')
-const bashSync = require('child_process').execSync
+const childProcess = require('child_process')
+const execSync = childProcess.execSync
 const fs = require('fs')
-const bash = require('child_process').exec
+const exec = childProcess.exec
+const os = require('os')
 
 require('./sun')
 
+// Theme vars.
+const gnomeLightTheme = 'Yaru-Red'
+const gnomeDarkTheme = 'Yaru-Red-Dark'
+const mailspringLightTheme = 'ui-light'
+const mailspringDarkTheme = 'ui-dark'
+
 // Hardcoded vars.
-const savedTimesPath = '/home/' + bashSync('whoami').toString().trim() + '/savedSunTimes.json'
-const mailSpringDarkTheme = 'ui-dark'
-const mailSpringLightTheme = 'ui-light'
+const savedTimesPath = os.homedir() + '/savedSunTimes.json'
 
 // Pause code execution for specified ms
 const sleep = (ms) => new Promise((resolve, reject) => { setTimeout(() => { resolve() }, ms) })
@@ -119,47 +122,51 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 
 // Change the gnome Shell and App themes (if they are not already set)
 const changeGNOMETheme = async (theme) => {
-	let currentShellTheme = bashSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
-	let currentAppTheme = bashSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
-	let time = new Date()
-	if (`'${theme}'` != currentAppTheme) {
-		bashSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
-		console.log(`GNOME App theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-	} else {
-		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
-	}
-	if (`'${theme}'` != currentShellTheme) {
-		await sleep(1000) // Pop!_OS 20.04 Bugifx
-		bashSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
-		console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-	} else {
-		console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)
+	if (os.platform() == 'linux') {
+		let currentShellTheme = execSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
+		let currentAppTheme = execSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
+		let time = new Date()
+		if (`'${theme}'` != currentAppTheme) {
+			execSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
+			console.log(`GNOME App theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+		} else {
+			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
+		}
+		if (`'${theme}'` != currentShellTheme) {
+			await sleep(1000) // Pop!_OS 20.04 Bugifx
+			execSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
+			console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+		} else {
+			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)
+		}
 	}
 }
 
 // If a Mailspring folder exists in the current User's ~/.config, then the *.core.theme property in config.json is changed to the theme provided (if it is not already the same theme)
 const changeMailSpringTheme = (theme) => {
-	let username = bashSync('whoami').toString().trim()
-	if (fs.existsSync(`/home/${username}/.config/Mailspring/config.json`)) {
-		let mailspringConfig = JSON.parse(fs.readFileSync(`/home/${username}/.config/Mailspring/config.json`).toString())
-		if (mailspringConfig) {
-			if (mailspringConfig['*']) {
-				if (mailspringConfig['*'].core) {
-					let time = new Date()
-					if (mailspringConfig['*'].core.theme != theme) {
-						mailspringConfig['*'].core.theme = theme
-						fs.writeFileSync(`/home/${username}/.config/Mailspring/config.json`, JSON.stringify(mailspringConfig, null, '\t'))
-						console.log(`Mailspring theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-						try {
-							bashSync('pkill -f mailspring')
-						} catch (err) {
-							// Try catch needed as this always throws an error
+	if (os.platform() == 'linux') {
+		let username = execSync('whoami').toString().trim()
+		if (fs.existsSync(`/home/${username}/.config/Mailspring/config.json`)) {
+			let mailspringConfig = JSON.parse(fs.readFileSync(`/home/${username}/.config/Mailspring/config.json`).toString())
+			if (mailspringConfig) {
+				if (mailspringConfig['*']) {
+					if (mailspringConfig['*'].core) {
+						let time = new Date()
+						if (mailspringConfig['*'].core.theme != theme) {
+							mailspringConfig['*'].core.theme = theme
+							fs.writeFileSync(`/home/${username}/.config/Mailspring/config.json`, JSON.stringify(mailspringConfig, null, '\t'))
+							console.log(`Mailspring theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+							try {
+								execSync('pkill -f mailspring')
+							} catch (err) {
+								// Try catch needed as this always throws an error
+							}
+							console.log(`Mailspring process killed at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+							exec('mailspring --background &')
+							console.log(`Mailspring started in background at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
+						} else {
+							console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change Mailspring theme (currently ${mailspringConfig['*'].core.theme}).`)
 						}
-						console.log(`Mailspring process killed at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-						bash('mailspring --background &')
-						console.log(`Mailspring started in background at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
-					} else {
-						console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change Mailspring theme (currently ${mailspringConfig['*'].core.theme}).`)
 					}
 				}
 			}
@@ -173,24 +180,27 @@ const changeThemesWithSunTimes = async (sunTimes, lightTheme, darkTheme) => {
 	let sunrise = sunTimes.sunrise
 	let sunset = sunTimes.sunset
 	if (now > sunrise && now < sunset) {
-		await changeGNOMETheme(lightTheme)
-		changeMailSpringTheme(mailSpringLightTheme)
+		if (os.platform() == 'linux') {
+			await changeGNOMETheme(gnomeLightTheme)
+			changeMailSpringTheme(mailspringLightTheme)
+		} else if (os.platform() == 'win32') {
+			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 1 /f; reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 1 /f`)
+		}
 	} else {
-		await changeGNOMETheme(darkTheme)
-		changeMailSpringTheme(mailSpringDarkTheme)
+		if (os.platform() == 'linux') {
+			await changeGNOMETheme(gnomeDarkTheme)
+			changeMailSpringTheme(mailspringDarkTheme)
+		} else if (os.platform() == 'win32') {
+			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 0 /f; reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 0 /f`)
+		}
 	}
 }
 
 // Main logic
-// Gets the sunrise/sunset times and sets the Gnome-theme accordingly.
-// Themes are from the program arguments (process.argv[2] and process.argv[3])
+// Gets the sunrise/sunset times and sets the themes accordingly.
 const run = async () => {
-	if (process.argv.length <= 3) {
-		throw 'Please provide light and dark theme names as arguments!'
-	} else {
-		let sunTimes = await getSunTimes(savedTimesPath, 24)
-		await changeThemesWithSunTimes(sunTimes, process.argv[2], process.argv[3])
-	}
+	let sunTimes = await getSunTimes(savedTimesPath, 24)
+	await changeThemesWithSunTimes(sunTimes)
 }
 
 run().then(() => {

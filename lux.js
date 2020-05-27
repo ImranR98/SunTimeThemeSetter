@@ -11,7 +11,7 @@ require('./sun')
 
 // Theme vars.
 const gnomeLightTheme = 'Yaru-Red'
-const gnomeDarkTheme = 'Yaru-Red-Dark'
+const gnomeDarkTheme = 'Yaru-Red-dark'
 const mailspringLightTheme = 'ui-light'
 const mailspringDarkTheme = 'ui-dark'
 
@@ -184,14 +184,14 @@ const changeThemesWithSunTimes = async (sunTimes, lightTheme, darkTheme) => {
 			await changeGNOMETheme(gnomeLightTheme)
 			changeMailSpringTheme(mailspringLightTheme)
 		} else if (os.platform() == 'win32') {
-			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 1 /f; reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 1 /f`)
+			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 1 /f & reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 1 /f`)
 		}
 	} else {
 		if (os.platform() == 'linux') {
 			await changeGNOMETheme(gnomeDarkTheme)
 			changeMailSpringTheme(mailspringDarkTheme)
 		} else if (os.platform() == 'win32') {
-			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 0 /f; reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 0 /f`)
+			execSync(`reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v AppsUseLightTheme /t REG_DWORD /d 0 /f & reg add HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize /v SystemUsesLightTheme /t REG_DWORD /d 0 /f`)
 		}
 	}
 }

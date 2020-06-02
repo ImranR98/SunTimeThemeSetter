@@ -3,7 +3,7 @@ Automatically switch between light/dark themes on sunrise/sunset.
 
 Supports:
 - GNOME Desktop Environment on Linux.
-- Windows 10 light/dark theme.
+- Windows 10.
 - Mailspring email app on Linux.
 
 ## Requirements

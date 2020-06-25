@@ -10,8 +10,8 @@ const os = require('os')
 require('./sun')
 
 // Theme vars.
-const gnomeLightTheme = 'Yaru-Red'
-const gnomeDarkTheme = 'Yaru-Red-dark'
+const gnomeLightTheme = 'Yaru-Grey'
+const gnomeDarkTheme = 'Yaru-Grey-dark'
 const mailspringLightTheme = 'ui-light'
 const mailspringDarkTheme = 'ui-dark'
 

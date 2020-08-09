@@ -10,5 +10,14 @@ Supports:
 Requires Node.js.
 
 ## Usage
-- Rename config.template.js to config.js, then change the variables in it to whatever you need.
-- Setup `node luxLoop.js` to run on startup.
+### Setup Themes
+Rename config.template.js to config.js, then change the variables in it to whatever you need.
+
+### Run on Startup
+Setup `node luxLoop.js` to run on startup.
+
+On Windows, this is done by creating a new shortcut in 'C:\Users\YourName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' with the 
+target set to 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -command "Start-Process -WindowStyle hidden -FilePath node ...\Path\To\Lux\luxLoop.js"' and 
+the 'start in' set to 'C:\Windows\System32\WindowsPowerShell\v1.0'.
+
+On Linux running GNOME, this is done by creating the appropriate .desktop file in ~/.config/autostart.

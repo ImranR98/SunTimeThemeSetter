@@ -13,6 +13,9 @@ Requires Node.js.
 ### Setup Themes
 Rename config.template.js to config.js, then change the variables in it to whatever you need.
 
+### Prepare OS
+If on Linux using GNOME, make sure to install the [GNOME Tweak tool](https://wiki.gnome.org/action/show/Apps/Tweaks?action=show&redirect=Apps%2FGnomeTweakTool) and enable the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/).
+
 ### Run on Startup
 Setup `node luxLoop.js` to run on startup.
 

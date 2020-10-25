@@ -150,7 +150,7 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 // Change the GNOME Shell and App themes. Does nothing if not on Linux (or not using GNOME on Linux).
 const changeGNOMETheme = async (theme) => {
 	if (os.platform() == 'linux') {
-		let currentShellTheme = execSync(`gsettings get org.gnome.shell.extensions.user-theme name`).toString().trim()
+		let currentShellTheme = execSync(`gsettings --schemadir ~/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/ get org.gnome.shell.extensions.user-theme name`).toString().trim()
 		let currentAppTheme = execSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
 		let time = new Date()
 		if (`'${theme}'` != currentAppTheme) {
@@ -161,7 +161,7 @@ const changeGNOMETheme = async (theme) => {
 		}
 		if (`'${theme}'` != currentShellTheme) {
 			await sleep(1000) // Pop!_OS 20.04 Bugifx
-			execSync(`gsettings set org.gnome.shell.extensions.user-theme name "${theme}"`)
+			execSync(`gsettings --schemadir ~/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/ set org.gnome.shell.extensions.user-theme name "${theme}"`)
 			console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 		} else {
 			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME Shell theme (currently ${theme}).`)

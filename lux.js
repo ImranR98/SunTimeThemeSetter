@@ -174,6 +174,7 @@ const changeMailSpringTheme = async (theme) => {
 	let configPath = null
 	if (os.platform() == 'linux') {
 		configPath = os.homedir() + '/.config/Mailspring/config.json'
+		if (!fs.existsSync(configPath)) configPath = os.homedir() + '/snap/mailspring/common/config.json' // In case of a Snap install
 	} else if (os.platform() == 'win32') {
 		configPath = os.homedir() + '/AppData/Roaming/Mailspring/config.json'
 	} else {

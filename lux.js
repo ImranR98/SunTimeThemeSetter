@@ -94,7 +94,7 @@ const getNewSunTimes = async (saveToFilePath = null) => {
 	console.log('Getting public IP...')
 	let publicIP = await simpleHttpGet3Tries('https://ipinfo.io/ip')
 	console.log('Getting location from IP...')
-	let IPLocation = JSON.parse(await simpleHttpGet3Tries(`https://ipvigilante.com/${publicIP}`)).data
+	let IPLocation = JSON.parse(await simpleHttpGet3Tries(`https://freegeoip.app/json/${publicIP}`))
 	console.log('Calculating Sun Times from Location...')
 	let final = {
 		sunrise: getTimeNumberFromDate(new Date().sunrise(IPLocation.latitude, IPLocation.longitude)),

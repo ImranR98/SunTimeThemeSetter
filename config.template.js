@@ -5,7 +5,8 @@ module.exports.config = {
     mailspringDarkTheme: 'ui-dark', // Mailspring theme on sunset
     lightGNOMEWallpaper: '', // GNOME wallpaper on sunrise
     darkGNOMEWallpaper: '', // GNOME wallpaper on sunset
-    shouldChangeGNOMETheme: true, // Whether the GNOME theme should be changed
+    shouldChangeGNOMEAppTheme: true, // Whether the GNOME App theme should be changed
+    shouldChangeGNOMEShellTheme: false, // Whether the GNOME Shell theme should be changed (same theme names as App theme)
     shouldChangeGNOMEWallpaper: true, // Whether the GNOME wallpaper should be changed
     shouldChangeWindows10Theme: true, // Whether the Windows 10 theme should be changed
     shouldChangeMailspringTheme: true // Whether the Mailspring theme should be changed

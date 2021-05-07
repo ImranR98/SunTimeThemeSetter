@@ -148,7 +148,7 @@ const getSunTimes = async (sunTimesFilePath, staleDataHoursLimit = 24) => {
 //==================================
 
 // Change the GNOME Shell and App themes. Does nothing if not on Linux (or not using GNOME on Linux). Also changes the wallpaper if provided.
-const changeGNOMETheme = async (theme, wallpaper = null) => {
+const changeGNOMETheme = async (theme, changeShellTheme = true, wallpaper = null) => {
 	if (typeof wallpaper === 'string') if (wallpaper.trim().length === 0) wallpaper = null
 	if (os.platform() == 'linux') {
 		let currentShellTheme = execSync(`gsettings --schemadir ~/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/ get org.gnome.shell.extensions.user-theme name`).toString().trim()
@@ -161,7 +161,7 @@ const changeGNOMETheme = async (theme, wallpaper = null) => {
 		} else {
 			console.log(`${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()} - No need to change GNOME App theme (currently ${theme}).`)
 		}
-		if (`'${theme}'` != currentShellTheme) {
+		if (`'${theme}'` != currentShellTheme && changeShellTheme) {
 			await sleep(1000) // Pop!_OS 20.04 Bugifx
 			execSync(`gsettings --schemadir ~/.local/share/gnome-shell/extensions/user-theme@gnome-shell-extensions.gcampax.github.com/schemas/ set org.gnome.shell.extensions.user-theme name "${theme}"`)
 			console.log(`GNOME Shell theme ${theme} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
@@ -244,11 +244,11 @@ const changeThemesWithSunTimes = async (sunTimes, lightTheme, darkTheme) => {
 	let sunrise = sunTimes.sunrise
 	let sunset = sunTimes.sunset
 	if (now > sunrise && now < sunset) {
-		if (config.config.shouldChangeGNOMETheme) await changeGNOMETheme(config.config.gnomeLightTheme, config.config.lightGNOMEWallpaper)
+		if (config.config.shouldChangeGNOMEAppTheme) await changeGNOMETheme(config.config.gnomeLightTheme, config.config.shouldChangeGNOMEShellTheme, config.config.lightGNOMEWallpaper)
 		if (config.config.shouldChangeWindows10Theme) changeWindows10Theme(false)
 		if (config.config.shouldChangeMailspringTheme) await changeMailSpringTheme(config.config.mailspringLightTheme)
 	} else {
-		if (config.config.shouldChangeGNOMETheme) await changeGNOMETheme(config.config.gnomeDarkTheme, config.config.darkGNOMEWallpaper)
+		if (config.config.shouldChangeGNOMEAppTheme) await changeGNOMETheme(config.config.gnomeDarkTheme, config.config.shouldChangeGNOMEShellTheme, config.config.darkGNOMEWallpaper)
 		if (config.config.shouldChangeWindows10Theme) changeWindows10Theme(true)
 		if (config.config.shouldChangeMailspringTheme) await changeMailSpringTheme(config.config.mailspringDarkTheme)
 	}

@@ -155,7 +155,9 @@ const changeGNOMETheme = async (theme, changeShellTheme = true, wallpaper = null
 		let currentAppTheme = execSync(`gsettings get org.gnome.desktop.interface gtk-theme`).toString().trim()
 		let time = new Date()
 		if (`'${theme}'` != currentAppTheme) {
+			const hiddenFileSetting = execSync(`gsettings get org.gtk.Settings.FileChooser show-hidden`).toString()
 			execSync(`gsettings set org.gnome.desktop.interface gtk-theme "${theme}"`)
+			execSync(`gsettings set org.gtk.Settings.FileChooser show-hidden ${hiddenFileSetting}`)
 			if (wallpaper) execSync(`gsettings set org.gnome.desktop.background picture-uri file://"${wallpaper}"`)
 			console.log(`GNOME App theme ${theme}${wallpaper ? ' and wallpaper' : ''} set at ${time.getHours()}:${time.getMinutes()}:${time.getMilliseconds()}.`)
 		} else {
